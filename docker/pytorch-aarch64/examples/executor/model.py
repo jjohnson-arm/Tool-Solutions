@@ -75,7 +75,7 @@ class Model:
     def __init__(self):
         self._model = None
 
-    def load(self, model_file):
+    def load(self, model_file, device=None):
         """
         Downloads the model from given URL and builds frozen function
         that can be used for inference
@@ -133,6 +133,9 @@ class Model:
             ), "Cannot load module as there is no Python code of model class"
 
         self._model.eval()
+
+        if device is not None:
+            self._model = self._model.to(device)
 
         return True
 

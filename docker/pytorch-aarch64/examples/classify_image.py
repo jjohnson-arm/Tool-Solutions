@@ -35,21 +35,27 @@ def main():
 
     args = vision_parser.parse_arguments()
 
+    device = None
+    if args["xla"]:
+        import torch_xla.core.xla_model as xm
+        device = xm.xla_device()
+
+
     # Load model used for inference
     classification_model = model.Model()
-    if not classification_model.load(args["model"]):
+    if not classification_model.load(args["model"], device):
         sys.exit("Failed to set up the model")
 
     # Preprocess the image
     image_to_classify = image.preprocess_image_for_classification(
-        args["image"]
+        args["image"], device
     )
 
     # Predict
     predictions = classification_model.run(image_to_classify, args["runs"])
 
     # Label predictions
-    label.classify_predictions(args["model"], predictions)
+    label.classify_predictions(args["model"], predictions, device)
 
 
 if __name__ == "__main__":

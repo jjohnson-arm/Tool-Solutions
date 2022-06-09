@@ -53,6 +53,11 @@ def parse_arguments():
         default=5,
         required=False,
     )
+    parser.add_argument(
+        "--xla",
+        action="store_true",
+        help="Use XLA device to run model",
+    )
 
     args = vars(parser.parse_args())
 

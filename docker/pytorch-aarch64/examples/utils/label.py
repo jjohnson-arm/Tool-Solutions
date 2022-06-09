@@ -30,7 +30,7 @@ import torch
 from . import common
 
 
-def classify_predictions(model_file, predictions):
+def classify_predictions(model_file, predictions, device=None):
     """
     Gets the label file and prints out top prediction and top 5 predictions
     :param model_file: Path to file describing where to get labels
@@ -57,6 +57,8 @@ def classify_predictions(model_file, predictions):
 
     probabilities = torch.nn.functional.softmax(predictions[0], dim=0)
     _, top5_catid = torch.topk(probabilities, 5)
+    if device is not None:
+        top5_catid = top5_catid.cpu()
     print("---------------------------------")
     print("Top prediction is: " + labels[top5_catid[0]])
     print("---------------------------------")

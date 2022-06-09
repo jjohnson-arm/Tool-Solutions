@@ -55,7 +55,7 @@ def _download_image(image_loc):
     return image_file
 
 
-def preprocess_image_for_classification(image_url):
+def preprocess_image_for_classification(image_url, device=None):
     """
     Preprocess image for classification to do for inference on models
     that were trained using ImageNet
@@ -78,6 +78,8 @@ def preprocess_image_for_classification(image_url):
     )
     input_tensor = preprocess(input_image)
     processed_image = input_tensor.unsqueeze(0)
+    if device is not None:
+        processed_image = processed_image.to(device)
 
     return processed_image
 
