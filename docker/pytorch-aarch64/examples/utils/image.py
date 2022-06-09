@@ -84,7 +84,7 @@ def preprocess_image_for_classification(image_url, device=None):
     return processed_image
 
 
-def preprocess_image_for_detection(image_url, model_file):
+def preprocess_image_for_detection(image_url, model_file, device=None):
     """
     Preprocess image for object detection for SSD-ResNet34 model
     :param image_url: URL from where to download image
@@ -118,7 +118,12 @@ def preprocess_image_for_detection(image_url, model_file):
     # create batch of 1
     image_batch = np.expand_dims(numpy_image, axis=0)
 
-    return torch.tensor(image_batch).float().to("cpu"), image_file
+    image_for_detection = torch.tensor(image_batch).float()
+    if device is None:
+        image_for_detection = image_for_detection.to("cpu")
+    else:
+        image_for_detection = image_for_detection.to(device)
+    return image_for_detection, image_file
 
 
 def postprocess_image_for_detection(

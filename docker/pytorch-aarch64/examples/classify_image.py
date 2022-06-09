@@ -39,13 +39,14 @@ def main():
     if args["xla"]:
         import torch_xla.core.xla_model as xm
         device = xm.xla_device()
-
+        print("Using XLA")
 
     # Load model used for inference
     classification_model = model.Model()
     if not classification_model.load(args["model"], device):
         sys.exit("Failed to set up the model")
 
+    print(classification_model)
     # Preprocess the image
     image_to_classify = image.preprocess_image_for_classification(
         args["image"], device

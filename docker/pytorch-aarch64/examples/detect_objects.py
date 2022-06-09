@@ -35,14 +35,21 @@ def main():
 
     args = vision_parser.parse_arguments()
 
+    device = None
+    if args["xla"]:
+        import torch_xla.core.xla_model as xm
+        device = xm.xla_device()
+        print("Using XLA")
+
     # Load model used for inference
     detection_model = model.Model()
-    if not detection_model.load(args["model"]):
+    if not detection_model.load(args["model"], device):
         sys.exit("Failed to set up the model")
 
+    print(detection_model)
     # Preprocess the image
     image_for_detection, image_file = image.preprocess_image_for_detection(
-        args["image"], args["model"]
+        args["image"], args["model"], device
     )
 
     # Predict
