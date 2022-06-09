@@ -56,6 +56,11 @@ def parse_arguments():
         help="Question to ask about the user-provided text. Note: SQuAD id is ignored if set.",
         required=False,
     )
+    parser.add_argument(
+        "--xla",
+        action="store_true",
+        help="Use XLA device to run model",
+    )
 
     args = vars(parser.parse_args())
 

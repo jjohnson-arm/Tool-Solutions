@@ -62,6 +62,12 @@ def main():
     else:
         sys.exit("Parser didn't return args correctly")
 
+    device = None
+    if args["xla"]:
+        import torch_xla.core.xla_model as xm
+        device = xm.xla_device()
+        print("Using XLA")
+
     # Setup the question, either from a specified SQuAD record
     # or from cmd line arguments.
     # If no question details are provided, a random
@@ -132,6 +138,7 @@ def main():
         "distilbert-base-uncased-distilled-squad"
     )
 
+    # TODO - run on device??
     encoding = token.encode_plus(
         question,
         context,
@@ -142,9 +149,17 @@ def main():
         encoding["input_ids"],
         encoding["attention_mask"],
     )
+    input_tensor = torch.tensor([input_ids])
+    attention_tensor = torch.tensor([attention_mask])
+
+    if device is not None:
+        model = model.to(device)
+        input_tensor = input_tensor.to(device)
+        attention_tensor = attention_tensor.to(device)
+
     start_scores, end_scores = model(
-        torch.tensor([input_ids]),
-        attention_mask=torch.tensor([attention_mask]),
+        input_tensor,
+        attention_mask=attention_tensor,
         return_dict=False,
     )
 
