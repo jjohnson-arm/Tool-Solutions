@@ -1,4 +1,4 @@
-# #!/usr/bin/env python3
+#!/usr/bin/env python3
 # *******************************************************************************
 # Copyright 2022 Arm Limited and affiliates.
 # SPDX-License-Identifier: Apache-2.0
@@ -60,12 +60,12 @@ def run_command(cmd, env = None, verbose=False):
     return stdout, stderr
 
 def convert_to_dollars(results, machine):
-    result = statistics.median(results)
+    median = statistics.median(results)
     # Seconds in an hour divided by runs then multiply by 1000 for ms
-    iterations_per_hour = (3600 / result) * 1000
+    iterations_per_hour = (3600 / median) * 1000
     dollars_per_iteration = MACHINE_COSTS[machine] / iterations_per_hour
 
-    return dollars_per_iteration
+    return dollars_per_iteration, median
 
 def parse_args(all_benchmarks_list, frameworks_list, machines_list):
     parser = argparse.ArgumentParser()
@@ -250,8 +250,9 @@ def main():
                         print_command_output(out, err)
 
                 logger.debug(results)
-                if args.mach:
-                    dollars_per_iteration = convert_to_dollars(results, args.mach)
+                if args.mach and results:
+                    dollars_per_iteration, median = convert_to_dollars(results, args.mach)
+                    logger.info(f"Median value: {median}")
                     dollars_per_million = dollars_per_iteration * 1000000
                     print(f"$$$$$ Dollars per a million iterations: {dollars_per_million:0.2f}")
 
