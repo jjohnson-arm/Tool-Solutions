@@ -154,9 +154,10 @@ class Model:
 
             inference_time = np.round((end - start) / 1e6, 2)
             inference_times.append(inference_time)
+            print("Inference time: %d ms" % inference_time)
 
         print("---------------------------------")
-        print("Inference time: %d ms" % np.min(inference_times))
+        print("Best inference time: %d ms" % np.min(inference_times))
         print("---------------------------------")
 
         return predictions

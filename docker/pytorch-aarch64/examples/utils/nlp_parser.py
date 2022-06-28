@@ -61,7 +61,18 @@ def parse_arguments():
         action="store_true",
         help="Use XLA device to run model",
     )
-
+    parser.add_argument(
+        "-r",
+        "--runs",
+        type=int,
+        help="Number of inference runs",
+        default=5,
+        required=False,
+    )
     args = vars(parser.parse_args())
+
+    assert (
+        args["runs"] > 0
+    ), "Number of inference runs must be greater then zero"
 
     return args

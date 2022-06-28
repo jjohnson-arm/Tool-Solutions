@@ -16,8 +16,10 @@
 # *******************************************************************************
 
 import sys
+import time
 import random
 import torch
+import numpy as np
 from transformers import DistilBertTokenizer, DistilBertForQuestionAnswering
 
 from utils import nlp_parser
@@ -157,11 +159,23 @@ def main():
         input_tensor = input_tensor.to(device)
         attention_tensor = attention_tensor.to(device)
 
-    start_scores, end_scores = model(
-        input_tensor,
-        attention_mask=attention_tensor,
-        return_dict=False,
-    )
+    inference_times = []
+    for _ in range(args["runs"]):
+        start = time.time_ns()
+        start_scores, end_scores = model(
+            input_tensor,
+            attention_mask=attention_tensor,
+            return_dict=False,
+        )
+        end = time.time_ns()
+
+        inference_time = np.round((end - start) / 1e6, 2)
+        inference_times.append(inference_time)
+        print("Inference time: %d ms" % inference_time)
+
+    print("---------------------------------")
+    print("Best inference time: %d ms" % np.min(inference_times))
+    print("---------------------------------")
 
     answer_ids = input_ids[
         torch.argmax(start_scores) : torch.argmax(end_scores) + 1

@@ -16,6 +16,7 @@
 # *******************************************************************************
 
 import sys
+import time
 import random
 import numpy as np
 from transformers import DistilBertTokenizer, TFDistilBertForQuestionAnswering
@@ -142,9 +143,23 @@ def main():
         encoding["input_ids"],
         encoding["attention_mask"],
     )
-    model_output = model(
-        np.array([input_ids]), attention_mask=np.array([attention_mask])
-    )
+
+    inference_times = []
+    for _ in range(args["runs"]):
+        start = time.time_ns()
+        model_output = model(
+            np.array([input_ids]), attention_mask=np.array([attention_mask])
+        )
+        end = time.time_ns()
+
+        inference_time = np.round((end - start) / 1e6, 2)
+        inference_times.append(inference_time)
+        print("Inference time: %d ms" % inference_time)
+
+    print("---------------------------------")
+    print("Best inference time: %d ms" % np.min(inference_times))
+    print("---------------------------------")
+
     start_scores = model_output.start_logits
     end_scores = model_output.end_logits
 
