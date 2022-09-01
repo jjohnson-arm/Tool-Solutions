@@ -70,6 +70,8 @@ def main():
         device = xm.xla_device()
         print("Using XLA")
 
+    optimize = args["xnnpack"]
+
     # Setup the question, either from a specified SQuAD record
     # or from cmd line arguments.
     # If no question details are provided, a random
@@ -153,6 +155,11 @@ def main():
     )
     input_tensor = torch.tensor([input_ids])
     attention_tensor = torch.tensor([attention_mask])
+
+    if optimize:
+        scripted_fp_model = torch.jit.script(model)
+        optimized_scripted_fp_model = optimize_for_mobile(scripted_fp_model)
+        model = optimized_scripted_fp_model
 
     if device is not None:
         model = model.to(device)

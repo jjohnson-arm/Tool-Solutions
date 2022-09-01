@@ -58,6 +58,11 @@ def parse_arguments():
         action="store_true",
         help="Use XLA device to run model",
     )
+    parser.add_argument(
+        "--xnnpack",
+        action="store_true",
+        help="Optimize model for XNNPACK",
+    )
 
     args = vars(parser.parse_args())
 

@@ -41,9 +41,11 @@ def main():
         device = xm.xla_device()
         print("Using XLA")
 
+    optimize = args["xnnpack"]
+
     # Load model used for inference
     classification_model = model.Model()
-    if not classification_model.load(args["model"], device):
+    if not classification_model.load(args["model"], device, optimize=optimize):
         sys.exit("Failed to set up the model")
 
     print(classification_model)

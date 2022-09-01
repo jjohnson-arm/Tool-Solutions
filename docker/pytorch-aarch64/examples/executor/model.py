@@ -30,6 +30,7 @@ import yaml
 
 import torch
 import torchvision.models as torch_models
+from torch.utils.mobile_optimizer import optimize_for_mobile
 
 
 class DownloadProgressBar:
@@ -75,7 +76,7 @@ class Model:
     def __init__(self):
         self._model = None
 
-    def load(self, model_file, device=None):
+    def load(self, model_file, device=None, optimize=False):
         """
         Downloads the model from given URL and builds frozen function
         that can be used for inference
@@ -133,6 +134,11 @@ class Model:
             ), "Cannot load module as there is no Python code of model class"
 
         self._model.eval()
+
+        if optimize:
+            scripted_fp_model = torch.jit.script(self._model)
+            optimized_scripted_fp_model = optimize_for_mobile(scripted_fp_model)
+            self._model = optimized_scripted_fp_model
 
         if device is not None:
             self._model = self._model.to(device)
